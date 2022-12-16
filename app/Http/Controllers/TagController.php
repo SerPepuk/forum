@@ -35,7 +35,6 @@ class TagController extends Controller
                     'questions.created_at as created_at',
                 )->whereDate('created_at', Carbon::today())->count();
         }
-        // dd($tags);
         return view('tag.index', [
             'tags' => $tags,
         ]);

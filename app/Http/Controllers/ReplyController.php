@@ -42,7 +42,6 @@ class ReplyController extends Controller
      */
     public function store(Request $request, Question $question)
     {
-        // dd($question);
         $reply = new Reply();
         $reply->description = $request->description;
         $reply->question_id = $question->id;
@@ -82,9 +81,7 @@ class ReplyController extends Controller
      */
     public function update(Request $request, Reply $reply)
     {
-        // dd(Question::where('id', $reply->question_id)->first());
         Gate::authorize('mark-answer', Question::where('id', $reply->question_id)->first()->user_id);
-        // dd($reply);
         if ($reply->status == '') {
             $reply->status = 'Ответ';
         } else {

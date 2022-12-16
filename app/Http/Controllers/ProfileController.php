@@ -21,14 +21,12 @@ class ProfileController extends Controller
         $replies = Reply::all();
         $questions = Question::all();
         $user = User::where('id', auth()->user()->id)->first();
-        // dd($user);
         $user->question_qty = $questions->where('user_id', $user->id)->count();
         $user->replies_qty = $replies->where('user_id', $user->id)->count();
         $user->answer_qty = $replies->where('user_id', $user->id)->where('status', 'Ответ')->count();
         $user->last_question = $questions->where('user_id', $user->id)->max('created_at');
         $user->last_reply = $replies->where('user_id', $user->id)->max('created_at');
         $user->role = DB::table('model_has_roles')->where('model_id', $user->id)->first()->role_id == 1 ? 'пользователь' : 'администратор';
-        // dd($user);
 
         $user_questions = $questions->where('user_id', $user->id);
         foreach ($user_questions as $question) {
@@ -44,15 +42,11 @@ class ProfileController extends Controller
             $question->answer_qty = $replies->where('question_id', $question->id)->where('status', 'Ответ')->count();
             $question->likes_qty = Like::whereIn('reply_id', array_column($replies->where('question_id', $question->id)->toArray(), 'id'))->count();
         }
-        // dd(Reply::where('user_id', $user->id));
         $user_replies = Reply::where('user_id', $user->id)->get();
-        // ->join('users', 'users.id', '=', 'replies.user_id')->get();
         foreach ($user_replies as $reply) {
             $reply->likes_qty = Like::where('reply_id', $reply->id)->count();
             $reply->question = $questions->where('id', $reply->question_id)->first();
-            // dd($reply);
         }
-        // dd($user_replies);
         foreach ($user_replies as $question) {
             $question->tags = DB::table('question_has_tags')
                 ->where('question_id', $question->id)
@@ -63,7 +57,6 @@ class ProfileController extends Controller
                     'tags.slug as tag_slug',
                 )->get();
         }
-        // dd($user);
         return view('profile.index', [
             'user' => $user,
             'user_questions' => $user_questions,

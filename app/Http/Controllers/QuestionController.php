@@ -30,15 +30,12 @@ class QuestionController extends Controller
         $questions = Question::filter($request)
             ->paginate(5);
         $replies = Reply::all();
-        // dd($request);
         foreach ($questions as $question) {
             $question->user = User::where('id', $question->user_id)->first();
-            // dd($question->user);
             $question->reply_qty = $replies->where('question_id', $question->id)->count();
             $question->answer_qty = $replies->where('question_id', $question->id)->where('status', 'Ответ')->count();
             $question->likes_qty = Like::whereIn('reply_id', array_column($replies->where('question_id', $question->id)->toArray(), 'id'))->count();
             $question->last_reply = $replies->where('question_id', $question->id)->max('created_at');
-            // dd($question->last_reply);
             $question->tags = DB::table('question_has_tags')
                 ->where('question_id', $question->id)
                 ->join('tags', 'tags.id', '=', 'question_has_tags.tag_id')
@@ -49,7 +46,6 @@ class QuestionController extends Controller
                 )
                 ->get();
         }
-        // dd($questions);
         return view('question.index', [
             'questions' => $questions,
             'tags' => Tag::all(),
@@ -76,7 +72,6 @@ class QuestionController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->tags);
         $quested_tags = $request->tags;
         unset($request->tags);
         $question = new Question();
@@ -117,7 +112,6 @@ class QuestionController extends Controller
                 'tags.slug as tag_slug',
             )
             ->get();
-        // dd($question->user_id);
         $replies = Reply::where('question_id', '=', $question->id)
             ->orderByDesc('created_at')
             ->join('users', 'users.id', '=', 'replies.user_id')
@@ -156,7 +150,6 @@ class QuestionController extends Controller
                 'tags.title as title',
             )
             ->get();
-        // dd($question_tags->where('id', 2));
         return view('question.edit', [
             'tags' => Tag::all(),
             'question' => $question,
@@ -174,7 +167,6 @@ class QuestionController extends Controller
     public function update(Request $request, Question $question)
     {
         Gate::authorize('edit-questions', $question->user_id);
-        // dd($question->user_id);
         $quested_tags = $request->tags;
         unset($request->tags);
         DB::table('question_has_tags')->where('question_id', $question->id)->delete();
