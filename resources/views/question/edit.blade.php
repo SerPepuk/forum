@@ -14,7 +14,7 @@
                         <form action="{{ route('question.destroy', $question->id) }}" method="post">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-outline-danger">Удалить</button>
+                            <button type="submit" class="btn btn-outline-danger">Удалить вопрос</button>
                         </form>
                     </div>
                     <form action="{{ route('question.update', $question->id) }}" method="POST">
